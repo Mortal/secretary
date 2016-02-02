@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <vector>
+
 #include <iostream>
-#include <sstream>
 #include <map>
 
 template <typename T>
@@ -94,80 +94,3 @@ void print_decision(const std::vector<int> & decision) {
     std::cout << std::flush;
 }
 
-void find_best_decision(size_t n) {
-    score_strategy_cached c;
-    std::vector<int> best(n);
-    best[n-1] = n;
-    double bestScore = c(best);
-    for (size_t i = n-1; i--;) {
-        std::vector<int> decision = best;
-        for (size_t j = 0; j <= i + 1 && j <= (size_t) best[i+1]; ++j) {
-            decision[i] = j;
-            print_decision(decision);
-            auto score = c(decision);
-            if (score < bestScore) {
-                best = decision;
-                bestScore = score;
-            } else if (score > bestScore) {
-                break;
-            }
-        }
-    }
-    print_decision(best);
-    std::cout << ' ' << bestScore << std::endl;
-}
-
-void find_best_decision_check_monotone(size_t n) {
-    score_strategy_cached c;
-    std::vector<int> best(n);
-    double bestScore = c(best);
-    for (size_t i = n; i--;) {
-        std::vector<int> decision = best;
-        bool decreasing = true;
-        double prevScore = 0;
-        for (size_t j = 0; j <= i + 1; ++j) {
-            decision[i] = j;
-            print_decision(decision);
-            auto score = c(decision);
-            if (j == 0) {
-                prevScore = score;
-            } else if (decreasing && score > prevScore) {
-                decreasing = false;
-            } else if (!decreasing && score < prevScore) {
-                std::cout << "Not monotone" << std::endl;
-                decision[i] = j - 1;
-                for (auto x : decision) std::cout << ' ' << x;
-                std::cout << std::endl;
-                decision[i] = j;
-                for (auto x : decision) std::cout << ' ' << x;
-                std::cout << std::endl;
-            }
-            if (score < bestScore) {
-                best = decision;
-                bestScore = score;
-            }
-        }
-    }
-    print_decision(best);
-    std::cout << ' ' << bestScore << std::endl;
-}
-
-int main() {
-    /*
-    std::string line;
-    std::vector<int> decision;
-    while (std::getline(std::cin, line)) {
-        decision.clear();
-        std::stringstream ss(line);
-        int x;
-        while (ss >> x) decision.push_back(x);
-        auto score = score_strategy(decision);
-        std::cout << "Score is " << score << std::endl;
-    }
-    */
-    size_t n;
-    while (std::cin >> n) {
-        find_best_decision(n);
-    }
-    return 0;
-}
