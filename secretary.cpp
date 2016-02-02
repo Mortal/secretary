@@ -90,8 +90,9 @@ int main() {
     size_t n;
     while (std::cin >> n) {
         std::vector<int> best(n);
-        double bestScore = n;
-        for (size_t i = n; i--;) {
+        best[n-1] = n-1;
+        double bestScore = score_strategy(best);
+        for (size_t i = n - 1; i--;) {
             std::vector<int> decision = best;
 #ifdef CHECK_MONOTONE
             bool decreasing = true;
@@ -118,6 +119,12 @@ int main() {
                 if (score < bestScore) {
                     best = decision;
                     bestScore = score;
+                } else {
+#ifndef CHECK_MONOTONE
+                    if (score > bestScore) {
+                        break;
+                    }
+#endif
                 }
                 ++decision[i];
             }
