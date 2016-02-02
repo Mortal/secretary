@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <map>
 
 template <typename T>
 struct permutation {
@@ -55,7 +56,7 @@ struct permutation {
     }
 };
 
-double score_strategy(std::vector<int> decision) {
+double score_strategy(const std::vector<int> & decision) {
     permutation<int> p(decision.size());
     size_t score = 0;
     size_t perms = 0;
@@ -74,6 +75,83 @@ double score_strategy(std::vector<int> decision) {
     return (double) score / (double) perms;
 }
 
+struct score_strategy_cached {
+    double operator()(const std::vector<int> & decision) {
+        std::basic_string<int> key(&decision[0], decision.size());
+        auto ins = cache.insert({key, 0.0});
+        auto it = ins.first;
+        bool inserted = ins.second;
+        if (inserted) it->second = score_strategy(decision);
+        return it->second;
+    }
+
+    std::map<std::basic_string<int>, double> cache;
+};
+
+void print_decision(const std::vector<int> & decision) {
+    std::cout << "\r\e[K";
+    for (auto x : decision) std::cout << ' ' << x;
+    std::cout << std::flush;
+}
+
+void find_best_decision(size_t n) {
+    score_strategy_cached c;
+    std::vector<int> best(n);
+    best[n-1] = n;
+    double bestScore = c(best);
+    for (size_t i = n-1; i--;) {
+        std::vector<int> decision = best;
+        for (size_t j = 0; j <= i + 1 && j <= (size_t) best[i+1]; ++j) {
+            decision[i] = j;
+            print_decision(decision);
+            auto score = c(decision);
+            if (score < bestScore) {
+                best = decision;
+                bestScore = score;
+            } else if (score > bestScore) {
+                break;
+            }
+        }
+    }
+    print_decision(best);
+    std::cout << ' ' << bestScore << std::endl;
+}
+
+void find_best_decision_check_monotone(size_t n) {
+    score_strategy_cached c;
+    std::vector<int> best(n);
+    double bestScore = c(best);
+    for (size_t i = n; i--;) {
+        std::vector<int> decision = best;
+        bool decreasing = true;
+        double prevScore = 0;
+        for (size_t j = 0; j <= i + 1; ++j) {
+            decision[i] = j;
+            print_decision(decision);
+            auto score = c(decision);
+            if (j == 0) {
+                prevScore = score;
+            } else if (decreasing && score > prevScore) {
+                decreasing = false;
+            } else if (!decreasing && score < prevScore) {
+                std::cout << "Not monotone" << std::endl;
+                decision[i] = j - 1;
+                for (auto x : decision) std::cout << ' ' << x;
+                std::cout << std::endl;
+                decision[i] = j;
+                for (auto x : decision) std::cout << ' ' << x;
+                std::cout << std::endl;
+            }
+            if (score < bestScore) {
+                best = decision;
+                bestScore = score;
+            }
+        }
+    }
+    print_decision(best);
+    std::cout << ' ' << bestScore << std::endl;
+}
+
 int main() {
     /*
     std::string line;
@@ -89,50 +167,7 @@ int main() {
     */
     size_t n;
     while (std::cin >> n) {
-        std::vector<int> best(n);
-        best[n-1] = n-1;
-        double bestScore = score_strategy(best);
-        for (size_t i = n - 1; i--;) {
-            std::vector<int> decision = best;
-#ifdef CHECK_MONOTONE
-            bool decreasing = true;
-            double prevScore;
-#endif
-            for (size_t j = 0; j <= i && j <= (size_t) best[i+1]; ++j) {
-                decision[i] = j;
-                std::cout << '.' << std::flush;
-                auto score = score_strategy(decision);
-#ifdef CHECK_MONOTONE
-                if (j == 0) {
-                    prevScore = score;
-                } else if (decreasing && score > prevScore) {
-                    decreasing = false;
-                } else if (!decreasing && score < prevScore) {
-                    std::cout << "Not monotone" << std::endl;
-                    decision[i] = j - 1;
-                    for (auto x : decision) std::cout << ' ' << x;
-                    std::cout << std::endl;
-                    decision[i] = j;
-                    for (auto x : decision) std::cout << ' ' << x;
-                    std::cout << std::endl;
-                }
-#endif
-                if (score < bestScore) {
-                    best = decision;
-                    bestScore = score;
-                } else {
-#ifndef CHECK_MONOTONE
-                    if (score > bestScore) {
-                        break;
-                    }
-#endif
-                }
-                ++decision[i];
-            }
-        }
-        std::cout << std::endl;
-        for (auto x : best) std::cout << ' ' << x;
-        std::cout << std::endl;
+        find_best_decision(n);
     }
     return 0;
 }
