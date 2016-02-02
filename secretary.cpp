@@ -98,7 +98,7 @@ int main() {
             bool decreasing = true;
             double prevScore;
 #endif
-            for (size_t j = 0; j <= i; ++j) {
+            for (size_t j = 0; j <= i && j <= best[i+1]; ++j) {
                 decision[i] = j;
                 auto score = score_strategy(decision);
 #ifdef CHECK_MONOTONE
