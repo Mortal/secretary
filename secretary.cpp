@@ -98,8 +98,9 @@ int main() {
             bool decreasing = true;
             double prevScore;
 #endif
-            for (size_t j = 0; j <= i && j <= best[i+1]; ++j) {
+            for (size_t j = 0; j <= i && j <= (size_t) best[i+1]; ++j) {
                 decision[i] = j;
+                std::cout << '.' << std::flush;
                 auto score = score_strategy(decision);
 #ifdef CHECK_MONOTONE
                 if (j == 0) {
@@ -129,6 +130,7 @@ int main() {
                 ++decision[i];
             }
         }
+        std::cout << std::endl;
         for (auto x : best) std::cout << ' ' << x;
         std::cout << std::endl;
     }
