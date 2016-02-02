@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include <sstream>
 
 template <typename T>
 struct permutation {
@@ -54,15 +55,75 @@ struct permutation {
     }
 };
 
-int main() {
-    permutation<int> p(5);
+double score_strategy(std::vector<int> decision) {
+    permutation<int> p(decision.size());
+    size_t score = 0;
+    size_t perms = 0;
     do {
-        for (auto x : p.up) { std::cout << x << ' '; }
-        std::cout << std::endl;
-        for (auto x : p.prefix_rank) { std::cout << x << ' '; }
-        std::cout << std::endl;
-        for (auto x : p.down) { std::cout << x << ' '; }
-        std::cout << std::endl << std::endl;
+        ++perms;
+        // for (auto x : p.up) { std::cout << x << ' '; }
+        // std::cout << std::endl;
+        size_t i = 0;
+        while (i < decision.size()) {
+            if (p.prefix_rank[i] < decision[i]) break;
+            ++i;
+        }
+        // std::cout << "Chose " << p.up[i] << " at index " << i << std::endl;
+        score += (i == decision.size()) ? decision.size() : p.up[i];
     } while (p.next());
+    return (double) score / (double) perms;
+}
+
+int main() {
+    /*
+    std::string line;
+    std::vector<int> decision;
+    while (std::getline(std::cin, line)) {
+        decision.clear();
+        std::stringstream ss(line);
+        int x;
+        while (ss >> x) decision.push_back(x);
+        auto score = score_strategy(decision);
+        std::cout << "Score is " << score << std::endl;
+    }
+    */
+    size_t n;
+    while (std::cin >> n) {
+        std::vector<int> best(n);
+        double bestScore = n;
+        for (size_t i = n; i--;) {
+            std::vector<int> decision = best;
+#ifdef CHECK_MONOTONE
+            bool decreasing = true;
+            double prevScore;
+#endif
+            for (size_t j = 0; j <= i; ++j) {
+                decision[i] = j;
+                auto score = score_strategy(decision);
+#ifdef CHECK_MONOTONE
+                if (j == 0) {
+                    prevScore = score;
+                } else if (decreasing && score > prevScore) {
+                    decreasing = false;
+                } else if (!decreasing && score < prevScore) {
+                    std::cout << "Not monotone" << std::endl;
+                    decision[i] = j - 1;
+                    for (auto x : decision) std::cout << ' ' << x;
+                    std::cout << std::endl;
+                    decision[i] = j;
+                    for (auto x : decision) std::cout << ' ' << x;
+                    std::cout << std::endl;
+                }
+#endif
+                if (score < bestScore) {
+                    best = decision;
+                    bestScore = score;
+                }
+                ++decision[i];
+            }
+        }
+        for (auto x : best) std::cout << ' ' << x;
+        std::cout << std::endl;
+    }
     return 0;
 }
