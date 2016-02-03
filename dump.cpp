@@ -15,7 +15,5 @@ int main(int argc, char ** argv) {
         for (auto x : p.up) std::cout << ' ' << x;
         std::cout << std::endl;
     } while (p.next());
-    for (auto x : p.up) std::cout << ' ' << x;
-    std::cout << std::endl;
     return 0;
 }
