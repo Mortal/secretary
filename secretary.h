@@ -24,9 +24,13 @@ struct permutation_base {
         up.resize(n);
         std::iota(up.begin(), up.end(), T());
         count.resize(up.size());
+        reset_count();
+        down = up;
+    }
+
+    void reset_count() {
         for (size_t i = 0; i < count.size(); ++i)
             count[i] = 2 * (i+1);
-        down = up;
     }
 
     void swap(T i) {
@@ -56,7 +60,11 @@ struct permutation_base {
                 return true;
             }
         }
-        self().reset(up.size());
+        // final permutation is 1 0 2 3 4 5 ...
+        // move item 0 one left
+        if (up.size() > 1) move_left(0);
+        reset_count();
+        // we are back in initial permutation
         return false;
     }
 };
