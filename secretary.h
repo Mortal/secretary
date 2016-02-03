@@ -16,6 +16,10 @@ struct permutation {
     size_t k;
 
     permutation(size_t n) : n(n), up(n) {
+        reset();
+    }
+
+    void reset() {
         std::iota(up.begin(), up.end(), T());
         down = up;
         prefix_rank = down;
@@ -53,6 +57,7 @@ struct permutation {
             else move_right(i);
             return true;
         }
+        reset();
         return false;
     }
 };
