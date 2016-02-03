@@ -13,4 +13,4 @@ $(EXECS:=-debug): %-debug: %.cpp secretary.h
 	$(CXX) $(CXXFLAGS) -g $< -o $@
 
 $(EXECS:=-asan): %-asan: %.cpp secretary.h
-	$(CXX) $(CXXFLAGS) -O3 -march=native -fsanitize=address $< -o $@
+	$(CXX) $(CXXFLAGS) -g -fsanitize=address $< -o $@
