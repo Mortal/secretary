@@ -2,7 +2,7 @@
 
 #include "secretary.h"
 
-typedef int T;
+typedef long long T;
 
 void find_best_decision(size_t n) {
     score_strategy_cached<T> c;
