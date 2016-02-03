@@ -31,8 +31,6 @@ int main() {
         double
         t = measure_time<int>(n, ops);
         std::cout << "type=int n=" << n << " ops=" << ops << " time=" << t << " s time/op=" << (1e9 * t / ops) << "ns" << std::endl;
-        t = measure_time<char>(n, ops);
-        std::cout << "type=char n=" << n << " ops=" << ops << " time=" << t << " s time/op=" << (1e9 * t / ops) << "ns" << std::endl;
         t = measure_time<long long>(n, ops);
         std::cout << "type=longlong n=" << n << " ops=" << ops << " time=" << t << " s time/op=" << (1e9 * t / ops) << "ns" << std::endl;
     }
