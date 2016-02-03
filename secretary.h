@@ -13,7 +13,7 @@ struct permutation {
     std::vector<T> up;
     std::vector<T> down;
     std::vector<T> prefix_rank;
-    size_t k;
+    std::vector<T> count;
 
     permutation(size_t n) : n(n), up(n) {
         reset();
@@ -21,9 +21,11 @@ struct permutation {
 
     void reset() {
         std::iota(up.begin(), up.end(), T());
+        count.resize(up.size());
+        for (size_t i = 0; i < count.size(); ++i)
+            count[i] = 2 * (i+1);
         down = up;
         prefix_rank = down;
-        k = 0;
     }
 
     void swap(T i) {
@@ -48,14 +50,16 @@ struct permutation {
 
     bool next() {
         size_t i = n;
-        size_t k = ++this->k;
         while (i--) {
-            size_t state = k % (2*(i+1));
-            k /= i+1;
-            if (state == 0 || state == i+1) continue;
-            if (state < i+1) move_left(i);
-            else move_right(i);
-            return true;
+            size_t state = --count[i];
+            if (state == 0) {
+                count[i] = 2*(i+1);
+            } else if (state == i+1) {
+            } else {
+                if (state < i+1) move_right(i);
+                else move_left(i);
+                return true;
+            }
         }
         reset();
         return false;
@@ -99,4 +103,3 @@ void print_decision(const std::vector<int> & decision) {
     for (auto x : decision) std::cout << ' ' << x;
     std::cout << std::flush;
 }
-
