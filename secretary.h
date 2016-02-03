@@ -66,8 +66,9 @@ struct permutation {
     }
 };
 
-double score_strategy(const std::vector<int> & decision) {
-    permutation<int> p(decision.size());
+template <typename T>
+double score_strategy(const std::vector<T> & decision) {
+    permutation<T> p(decision.size());
     size_t score = 0;
     size_t perms = 0;
     do {
@@ -85,9 +86,10 @@ double score_strategy(const std::vector<int> & decision) {
     return (double) score / (double) perms;
 }
 
+template <typename T>
 struct score_strategy_cached {
-    double operator()(const std::vector<int> & decision) {
-        std::basic_string<int> key(&decision[0], decision.size());
+    double operator()(const std::vector<T> & decision) {
+        std::basic_string<T> key(&decision[0], decision.size());
         auto ins = cache.insert({key, 0.0});
         auto it = ins.first;
         bool inserted = ins.second;
@@ -95,10 +97,11 @@ struct score_strategy_cached {
         return it->second;
     }
 
-    std::map<std::basic_string<int>, double> cache;
+    std::map<std::basic_string<T>, double> cache;
 };
 
-void print_decision(const std::vector<int> & decision) {
+template <typename T>
+void print_decision(const std::vector<T> & decision) {
     std::cout << "\r\e[K";
     for (auto x : decision) std::cout << ' ' << x;
     std::cout << std::flush;

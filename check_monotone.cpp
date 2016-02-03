@@ -3,7 +3,7 @@
 #include "secretary.h"
 
 void find_best_decision_check_monotone(size_t n) {
-    score_strategy_cached c;
+    score_strategy_cached<int> c;
     std::vector<int> best(n);
     double bestScore = c(best);
     for (size_t i = n; i--;) {

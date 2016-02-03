@@ -2,13 +2,15 @@
 
 #include "secretary.h"
 
+typedef int T;
+
 void find_best_decision(size_t n) {
-    score_strategy_cached c;
-    std::vector<int> best(n);
+    score_strategy_cached<T> c;
+    std::vector<T> best(n);
     best[n-1] = n;
     double bestScore = c(best);
     for (size_t i = n-1; i--;) {
-        std::vector<int> decision = best;
+        std::vector<T> decision = best;
         for (size_t j = 0; j <= i + 1 && j <= (size_t) best[i+1]; ++j) {
             decision[i] = j;
             print_decision(decision);
