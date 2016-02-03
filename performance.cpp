@@ -19,7 +19,7 @@ struct timer {
 
 template <typename T>
 double measure_time(size_t n, size_t ops) {
-    permutation<T> p(n);
+    permutation<T> p((std::vector<T>(n)));
     timer t;
     while (ops--) p.next();
     return t.elapsed();
